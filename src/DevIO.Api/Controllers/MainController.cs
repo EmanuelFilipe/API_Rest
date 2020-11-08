@@ -24,6 +24,7 @@ namespace DevIO.Api.Controllers
         {
             return !_notificador.TemNotificacao();
         }
+
         protected ActionResult CustomResponse(object result = null)
         {
             if (OperacaoValida())

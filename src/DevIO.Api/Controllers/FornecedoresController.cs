@@ -15,12 +15,14 @@ namespace DevIO.Api.Controllers
     {
         private readonly IFornecedorRepository _fornecedorRepository;
         private readonly IFornecedorService _fornecedorService;
+        private readonly INotificador notificador;
         private readonly IMapper _mapper;
 
         public FornecedoresController(IFornecedorRepository fornecedorRepository, 
-                                      IFornecedorService fornecedorService, 
-                                      IMapper mapper)
-        {
+                                      IFornecedorService fornecedorService,
+                                      INotificador notificador,
+                                      IMapper mapper) : base(notificador)
+        { 
             _fornecedorRepository = fornecedorRepository;
             _fornecedorService = fornecedorService;
             _mapper = mapper;
@@ -49,43 +51,39 @@ namespace DevIO.Api.Controllers
         [HttpPost]
         public async Task<ActionResult<FornecedorViewModel>> Adicionar(FornecedorViewModel viewModel)
         {
-            if (!ModelState.IsValid) return BadRequest();
+            if (!ModelState.IsValid) return CustomResponse(ModelState);
 
-            var fornecedor = _mapper.Map<Fornecedor>(viewModel);
-            var result = await _fornecedorService.Adicionar(fornecedor);
+            await _fornecedorService.Adicionar(_mapper.Map<Fornecedor>(viewModel));
 
-            if (!result) return BadRequest();
-
-            return Ok(fornecedor);
+            return CustomResponse(viewModel);
         }
 
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<FornecedorViewModel>> Atualizar(Guid id, FornecedorViewModel viewModel)
         {
-            if (id != viewModel.Id) return BadRequest();
+            if (id != viewModel.Id)
+            {
+                NotificarErro("o Id informado não é o mesmo que foi passado na query");
+                return CustomResponse(viewModel);
+            }
 
-            if (!ModelState.IsValid) return BadRequest();
+            if (!ModelState.IsValid) return CustomResponse(ModelState);
 
-            var fornecedor = _mapper.Map<Fornecedor>(viewModel);
-            var result = await _fornecedorService.Atualizar(fornecedor);
+            await _fornecedorService.Atualizar(_mapper.Map<Fornecedor>(viewModel));
 
-            if (!result) return BadRequest();
-
-            return Ok(fornecedor);
+            return CustomResponse(viewModel);
         }
 
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult<FornecedorViewModel>> Excluir(Guid id)
         {
-            var fornecedor = await ObterFornecedorEndereco(id);
+            var viewModel = await ObterFornecedorEndereco(id);
 
-            if (fornecedor == null) return NotFound();
+            if (viewModel == null) return NotFound();
 
-            var result = await _fornecedorService.Remover(id);
+            await _fornecedorService.Remover(id);
 
-            if (!result) return BadRequest();
-
-            return Ok(fornecedor);
+            return CustomResponse(viewModel);
         }
 
         public async Task<FornecedorViewModel> ObterFornecedorProdutosEndereco(Guid id)
