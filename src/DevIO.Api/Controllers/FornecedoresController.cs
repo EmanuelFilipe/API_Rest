@@ -14,11 +14,13 @@ namespace DevIO.Api.Controllers
     public class FornecedoresController : MainController
     {
         private readonly IFornecedorRepository _fornecedorRepository;
+        private readonly IEnderecoRepository _enderecoRepository;
         private readonly IFornecedorService _fornecedorService;
         private readonly INotificador notificador;
         private readonly IMapper _mapper;
 
-        public FornecedoresController(IFornecedorRepository fornecedorRepository, 
+        public FornecedoresController(IFornecedorRepository fornecedorRepository,
+                                      IEnderecoRepository enderecoRepository,
                                       IFornecedorService fornecedorService,
                                       INotificador notificador,
                                       IMapper mapper) : base(notificador)
@@ -26,6 +28,7 @@ namespace DevIO.Api.Controllers
             _fornecedorRepository = fornecedorRepository;
             _fornecedorService = fornecedorService;
             _mapper = mapper;
+            _enderecoRepository = enderecoRepository;
         }
 
         [HttpGet]
@@ -82,6 +85,28 @@ namespace DevIO.Api.Controllers
             if (viewModel == null) return NotFound();
 
             await _fornecedorService.Remover(id);
+
+            return CustomResponse(viewModel);
+        }
+
+        [HttpGet("obter-endereco/{id:guid}")]
+        public async Task<EnderecoViewModel> ObterEnderecoPorId(Guid id)
+        {
+            return _mapper.Map<EnderecoViewModel>(await _enderecoRepository.ObterPorId(id));
+        }
+
+        [HttpPut("atualizar-endereco/{id:guid}")]
+        public async Task<ActionResult<FornecedorViewModel>> AtualizarEndereco(Guid id, EnderecoViewModel viewModel)
+        {
+            if (id != viewModel.Id)
+            {
+                NotificarErro("o Id informado não é o mesmo que foi passado na query");
+                return CustomResponse(viewModel);
+            }
+
+            if (!ModelState.IsValid) return CustomResponse(ModelState);
+
+            await _fornecedorService.AtualizarEndereco(_mapper.Map<Endereco>(viewModel));
 
             return CustomResponse(viewModel);
         }
