@@ -78,7 +78,6 @@ namespace DevIO.Api.Controllers
 
         private bool UploadArquivo(string arquivo, string imgNome)
         {
-            var imgDataByteArray = Convert.FromBase64String(arquivo);
 
             if (string.IsNullOrEmpty(arquivo))
             {
@@ -86,8 +85,9 @@ namespace DevIO.Api.Controllers
                 return false;
             }
 
+            var imgDataByteArray = Convert.FromBase64String(arquivo);
 
-            var filePath = Path.Combine(@"C:\Users\cloud\source\repos\API_Rest\src\DevIO.Api", @"wwwroot\imagens", imgNome);
+            var filePath = Path.Combine(@"C:\Users\cloud\source\repos\API_Rest\src\DevIO.Api", @"wwwroot\app\demo-webapi\src\assets", imgNome);
 
             if (System.IO.File.Exists(filePath))
             {
