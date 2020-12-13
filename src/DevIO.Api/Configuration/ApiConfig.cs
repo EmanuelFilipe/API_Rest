@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Net.Http.Headers;
 
 namespace DevIO.Api.Configuration
 {
@@ -17,11 +18,26 @@ namespace DevIO.Api.Configuration
 
             services.AddCors(options =>
             {
+                // para ambiente Development
                 options.AddPolicy("Development",
                     builder => builder.AllowAnyOrigin()
                                       .AllowAnyMethod()
                                       .AllowAnyHeader()
                                       .AllowCredentials());
+
+                // Política Padrão
+                //options.AddDefaultPolicy(builder => builder.AllowAnyOrigin()
+                //                                           .AllowAnyMethod()
+                //                                           .AllowAnyHeader()
+                //                                           .AllowCredentials());
+
+                // para ambiente Production
+                options.AddPolicy("Production",
+                    builder => builder.WithMethods("GET") // Pode-se adicionar mais verbos, separando-os por vírgula
+                                      .WithOrigins("http://desenvolvedor.io")// Pode-se adicionar mais domínios,  separando-os por vírgula
+                                      .SetIsOriginAllowedToAllowWildcardSubdomains()
+                                      //.WithHeaders(HeaderNames.ContentType, "x-custom-header")
+                                      .AllowAnyHeader());
             });
 
             return services;
