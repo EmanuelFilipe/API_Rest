@@ -8,15 +8,23 @@
       "sslPort": 44338
     }
   },
-  "profiles": {
-    "IIS Express": {
-      "commandName": "IISExpress",
-      "launchBrowser": true,
-      "launchUrl": "api/fornecedores",
-      "environmentVariables": {
-        "ASPNETCORE_ENVIRONMENT": "Development"
-      }
-    },
+	"profiles": {
+		"IIS - Dev": {
+			"commandName": "IISExpress",
+			"launchBrowser": true,
+			"launchUrl": "api/fornecedores",
+			"environmentVariables": {
+				"ASPNETCORE_ENVIRONMENT": "Development"
+			}
+		},
+		"IIS - Prod": {
+			"commandName": "IISExpress",
+			"launchBrowser": true,
+			"launchUrl": "api/fornecedores",
+			"environmentVariables": {
+				"ASPNETCORE_ENVIRONMENT": "Production"
+			}
+		},
 		"DevIO.Api": {
 			"commandName": "Project",
 			"launchBrowser": true,
@@ -26,5 +34,5 @@
 				"ASPNETCORE_ENVIRONMENT": "Development"
 			}
 		}
-  }
+	}
 }

@@ -7,11 +7,13 @@ using AutoMapper;
 using DevIO.Api.ViewModels;
 using DevIO.Business.Intefaces;
 using DevIO.Business.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DevIO.Api.Controllers
 {
+    [Authorize]
     [Route("api/produtos")]
     public class ProdutosController : MainController
     {
@@ -23,7 +25,8 @@ namespace DevIO.Api.Controllers
         public ProdutosController(INotificador notificador, 
                                   IProdutoRepository produtoRepository,                                  
                                   IProdutoService produtoService,
-                                  IMapper mapper) : base(notificador)
+                                  IMapper mapper,
+                                  IUser user) : base(notificador, user)
         {
             _produtoRepository = produtoRepository;
             _produtoService = produtoService;
@@ -46,6 +49,7 @@ namespace DevIO.Api.Controllers
             return produtoViewModel;
         }
 
+        //[ClaimsAuthorize("Produto", "Adicionar")]
         [HttpPost]
         public async Task<ActionResult<ProdutoViewModel>> Adicionar(ProdutoViewModel viewModel)
         {
@@ -85,6 +89,7 @@ namespace DevIO.Api.Controllers
             return CustomResponse(viewModel);
         }
 
+        //[ClaimsAuthorize("Produto", "Atualizar")]
         [HttpPut("{id:guid}")]
         public async Task<ActionResult<ProdutoViewModel>> Atualizar(Guid id, ProdutoViewModel viewModel)
         {
@@ -121,6 +126,27 @@ namespace DevIO.Api.Controllers
             return CustomResponse(viewModel);
         }
 
+        //[ClaimsAuthorize("Produto", "Adicionar")]
+        //[HttpPost]
+        //public async Task<ActionResult<ProdutoViewModel>> AdicionarAlternativo(ProdutoViewModel viewModel)
+        //{
+        //    if (!ModelState.IsValid) return CustomResponse(ModelState);
+
+        //    var imgPrefixo = Guid.NewGuid() + "_";
+
+        //    //if (! await UploadArquivoAlternativo(viewModel.ImagemUpload, imgPrefixo))
+        //    //{
+        //    //    return CustomResponse(viewModel);
+        //    //}
+
+        //    viewModel.Imagem = imgPrefixo + viewModel.ImagemUpload;
+
+        //    await _produtoService.Adicionar(_mapper.Map<Produto>(viewModel));
+
+        //    return CustomResponse(viewModel);
+        //}
+
+        //[ClaimsAuthorize("Fornecedor", "Excluir")]
         [HttpDelete("{id:guid}")]
         public async Task<ActionResult<ProdutoViewModel>> Excluir(Guid id)
         {
